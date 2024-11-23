@@ -1,14 +1,37 @@
+const int ledPins[] = {13, 12, 11, 10, 9, 8, 7, 6, 5, 4}; // LED pins
+const int numLeds = 10; // Number of LEDs
+
 void setup() {
-  Serial.begin(9600);
-  pinMode(13, OUTPUT);
+  Serial.begin(50000);
+  Serial.setTimeout(10);
+
+  // Set up all pins as output
+  for (int i = 0; i < numLeds; i++) {
+    pinMode(ledPins[i], OUTPUT);
+  }
 }
 
 void loop() {
-  char comando = Serial.read()
-  if (comando == "on") {
-    digitalWrite(13, HIGH);
+  if (Serial.available() > 0) { // Check if data is available to read
+    String input = Serial.readStringUntil('\n'); // Read input until newline
+    input.trim(); // Remove any leading/trailing whitespace
+    int number = input.toInt(); // Convert string to integer
+
+    if (number >= 0 && number <= 10) { // Check if number is within valid range
+      setLeds(number); // Turn on LEDs based on the number
+    } else {
+      Serial.println("Please enter a number between 0 and 10.");
+    }
   }
-  if (comando == "off") {
-    digitalWrite(13, LOW);
+}
+
+void setLeds(int number) {
+  // Turn on the required number of LEDs
+  for (int i = 0; i < numLeds; i++) {
+    if (i < number) {
+      digitalWrite(ledPins[i], HIGH); // Turn on LED
+    } else {
+      digitalWrite(ledPins[i], LOW); // Turn off LED
+    }
   }
 }
